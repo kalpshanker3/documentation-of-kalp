@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Amazon EBS Volume on Ubuntu EC2</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+      color: #333;
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    h1, h2, h3 {
+      color: #2c3e50;
+    }
+    code {
+      background: #eee;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    pre {
+      background-color: #272822;
+      color: #f8f8f2;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    ul {
+      list-style: disc;
+      padding-left: 20px;
+    }
+    .highlight {
+      background-color: #eaf2ff;
+      padding: 10px;
+      border-left: 5px solid #3498db;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Working with Amazon EBS Volume on Ubuntu EC2 Instance</h1>
+
+  <h2>What is an Amazon EBS Volume?</h2>
+  <p>
+    Amazon Elastic Block Store (EBS) is a block-level storage service designed to be used with Amazon EC2. It provides high-performance, persistent storage that can be attached to EC2 instances. EBS volumes can serve as both primary (root) and secondary storage devices for EC2 instances. A primary volume is created and attached during the instance launch and cannot be detached, while secondary volumes can be attached, detached, and resized at any time.
+  </p>
+
+  <h2>EBS Volume Types:</h2>
+  <ul>
+    <li><strong>General Purpose SSD (gp3/gp2)</strong>: Balanced price and performance.</li>
+    <li><strong>Provisioned IOPS SSD (io1/io2)</strong>: High performance for heavy workloads.</li>
+    <li><strong>Throughput Optimised HDD (st1)</strong>: Suitable for big data and sequential workloads.</li>
+    <li><strong>Cold HDD (sc1)</strong>: Low-cost, infrequently accessed workloads.</li>
+    <li><strong>Magnetic</strong>: Legacy, rarely used today.</li>
+  </ul>
+
+  <h2>Advantages of using EBS Volumes</h2>
+  <ul>
+    <li>High availability and durability.</li>
+    <li>Persistent data storage even after stopping an instance.</li>
+    <li>Ability to take snapshots and restore them.</li>
+    <li>Resizable volumes.</li>
+    <li>Encryption at rest.</li>
+    <li>Flexibility to attach/detach (except root volume).</li>
+  </ul>
+
+  <h2>Exercise:</h2>
+
+  <h3>Step 1: Launch an EC2 Instance</h3>
+  <div class="highlight">
+    Launch a new Ubuntu EC2 instance from the AWS Management Console. Use default storage (8 GB) and configure the security group to allow SSH (port 22). Launch the instance and connect using SSH.
+  </div>
+
+  <h3>Step 2: Resize the EBS Volume</h3>
+  <p>In the AWS Console:</p>
+  <ol>
+    <li>Go to EC2 > Instances > Your instance > Storage tab.</li>
+    <li>Click on the Volume ID.</li>
+    <li>From the Actions menu, choose <strong>Modify Volume</strong>.</li>
+    <li>Increase the size (e.g., 8 GB to 30 GB) and click <strong>Modify</strong>.</li>
+  </ol>
+
+  <h3>Step 3: Connect to Your EC2 Instance</h3>
+  <pre><code>ssh -i your-key.pem ubuntu@&lt;your-ec2-public-ip&gt;</code></pre>
+
+  <h3>Step 4: Install cloud-guest-utils</h3>
+  <pre><code>sudo apt update
+sudo apt install -y cloud-guest-utils</code></pre>
+
+  <h3>Step 5: Check Disk Information</h3>
+  <pre><code>lsblk
+df -h</code></pre>
+  <p>This will show the current disk and partition sizes. Typically, the device will be <code>/dev/xvda1</code>.</p>
+
+  <h3>Step 6: Resize the Partition</h3>
+  <pre><code>sudo growpart /dev/xvda 1</code></pre>
+
+  <h3>Step 7: Resize the File System</h3>
+  <pre><code>sudo resize2fs /dev/xvda1</code></pre>
+
+  <h3>Step 8: Verify the Resized Volume</h3>
+  <pre><code>df -h</code></pre>
+  <p>This should show the new volume size (e.g., 30 GB).</p>
+
+  <hr>
+  <p style="text-align: center;">Created with ❤️ for cloud learners</p>
+</body>
+</html>
